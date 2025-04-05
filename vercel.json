@@ -6,12 +6,6 @@
       "maxDuration": 10
     }
   },
-  "builds": [
-    {
-      "src": "api/**/*.js",
-      "use": "@vercel/node"
-    }
-  ],
   "rewrites": [
     { "source": "/api/health/:owner/:repo", "destination": "/api/health/[owner]/[repo].js" },
     { "source": "/api/badge/:owner/:repo", "destination": "/api/badge/[owner]/[repo].js" }
