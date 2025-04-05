@@ -23,7 +23,7 @@ export default async function handler(req, res) {
 
   try {
     
-    const response = await fetch(`https://${process.env.VERCEL_URL}/api/health/${owner}/${repo}`, {
+    const response = await fetch(`https://github-health-badge.vercel.app/api/health/${owner}/${repo}`, {
       headers: {
         Authorization: `token ${GITHUB_TOKEN}`,
         Accept: 'application/vnd.github.v3+json'
@@ -56,6 +56,7 @@ export default async function handler(req, res) {
 
   } catch (error) {
     console.error('Error generating badge:', error.message);
+    console.log(response)
     res.status(500).send('Error generating badge');
   }
 }
