@@ -2,7 +2,6 @@ import { createCanvas } from '@napi-rs/canvas';
 import axios from 'axios';
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
-const token = req.headers.authorization?.split(' ')[1];
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -23,14 +22,9 @@ export default async function handler(req, res) {
       ? `https://${process.env.VERCEL_URL}`
       : 'http://localhost:3000';
 
-    const url = `${baseUrl}/api/health/${owner}/${repo}`;
+    const url = `${baseUrl}/api/health/${owner}/${repo}?token=${GITHUB_TOKEN}`;
 
-    const response = await axios.get(url, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/vnd.github+json',
-      },
-    });
+    const response = await axios.get(url);
 
     const healthScore = response.data.healthScore;
 
