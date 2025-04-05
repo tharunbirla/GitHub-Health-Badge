@@ -147,10 +147,11 @@ node_modules
 
 *.sublime*
 
+canva.js
+
 psd
 thumb
 sketch
 
 ### Vercel ###
 .vercel
-vercel.json

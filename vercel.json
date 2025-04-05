@@ -1,0 +1,6 @@
+{
+    "rewrites": [
+      { "source": "/api/badge/:owner/:repo", "destination": "/api/badge.js" }
+    ]
+  }
+  
