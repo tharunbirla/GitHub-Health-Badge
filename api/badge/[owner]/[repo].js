@@ -17,7 +17,9 @@ export default async function handler(req, res) {
 
   try {
     // The URL has the protocol (https://)
-    const baseUrl = process.env.VERCEL_URL ? process.env.VERCEL_URL : 'https://github-health-badge.vercel.app';
+    const baseUrl = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : 'http://localhost:3000';
     const url = `${baseUrl}/api/health/${owner}/${repo}`;
 
     const response = await axios.get(url);
