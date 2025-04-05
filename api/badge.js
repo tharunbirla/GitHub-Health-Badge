@@ -9,7 +9,7 @@ export default async function handler(req, res) {
   const BACKEND_URL = process.env.BACKEND_URL;
 
   try {
-    const response = await axios.get(`${BACKEND_URL}/api/health/${owner}/${repo}`);
+    const response = await axios.get(`${req.headers.host.startsWith('localhost') ? 'http://' : 'https://'}${req.headers.host}/api/health/${owner}/${repo}`);
     const healthScore = response.data.healthScore;
 
     if (healthScore === undefined) {

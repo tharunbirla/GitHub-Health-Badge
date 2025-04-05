@@ -1,6 +1,23 @@
 {
-    "rewrites": [
-      { "source": "/api/badge/:owner/:repo", "destination": "/api/badge.js" }
+    "version": 2,
+    "builds": [
+      {
+        "src": "api/index.js",
+        "use": "@vercel/node"
+      },
+      {
+        "src": "api/badge.js",
+        "use": "@vercel/node"
+      }
+    ],
+    "routes": [
+      {
+        "src": "/api/health/(.*)",
+        "dest": "/api/index.js"
+      },
+      {
+        "src": "/api/badge",
+        "dest": "/api/badge.js"
+      }
     ]
-  }
-  
+}
