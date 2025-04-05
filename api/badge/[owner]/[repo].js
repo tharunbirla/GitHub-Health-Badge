@@ -1,4 +1,4 @@
-import { createCanvas, registerFont } from '@napi-rs/canvas';
+import { createCanvas } from '@napi-rs/canvas';
 import axios from 'axios';
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
