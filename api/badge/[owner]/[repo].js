@@ -14,18 +14,19 @@ export default async function handler(req, res) {
   }
 
   const { owner, repo } = req.query;
-  
+
   try {
-    // Testing URL is valid by adding the protocol if not set
-    const url = `${process.env.VERCEL_URL ? process.env.VERCEL_URL : 'https://github-health-badge.vercel.app'}/api/health/${owner}/${repo}`;
-    
+    // The URL has the protocol (https://)
+    const baseUrl = process.env.VERCEL_URL ? process.env.VERCEL_URL : 'https://github-health-badge.vercel.app';
+    const url = `${baseUrl}/api/health/${owner}/${repo}`;
+
     const response = await axios.get(url);
-    
+
     const healthScore = response.data.healthScore;
     if (healthScore === undefined) {
       return res.status(400).send('Health score not found in response');
     }
-    
+
     const color = healthScore >= 0.7 ? '#28a745' : '#dc3545';
     const canvas = createCanvas(300, 50);
     const ctx = canvas.getContext('2d');
@@ -36,7 +37,7 @@ export default async function handler(req, res) {
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(`Health Score: ${healthScore}`, 150, 25);
-    
+
     res.setHeader('Content-Type', 'image/png');
     res.send(canvas.toBuffer());
   } catch (error) {
