@@ -11,6 +11,8 @@ export default async function handler(req, res) {
   res.setHeader('Access-Control-Allow-Origin', '*');
   res.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS');
   res.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+  res.setHeader('Cache-Control', 's-maxage=300, stale-while-revalidate');
+
 
   if (req.method === 'OPTIONS') {
     res.status(200).end();
@@ -43,7 +45,11 @@ export default async function handler(req, res) {
       throw new Error('Invalid health score received');
     }
 
-    const color = healthScore >= 0.7 ? '#28a745' : '#dc3545'; // green or red
+    let color;
+    if (healthScore >= 0.8) color = '#28a745';      // green
+    else if (healthScore >= 0.5) color = '#ffc107'; // yellow
+    else color = '#dc3545';                         // red
+
     const canvas = createCanvas(300, 50);
     const ctx = canvas.getContext('2d');
 
@@ -54,7 +60,7 @@ export default async function handler(req, res) {
     ctx.font = '20px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`Health Score: ${healthScore.toFixed(2)}`, 150, 25);
+    ctx.fillText(`Unavailable`, 150, 25);
 
     res.setHeader('Content-Type', 'image/png');
     res.send(canvas.toBuffer());
