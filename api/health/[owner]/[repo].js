@@ -4,9 +4,13 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Initialize Octokit with GitHub token
-const getOctokit = () => {
+const getOctokit = (req) => {
+  const token = req.query.token || process.env.GITHUB_TOKEN;
+  if (!token) {
+    throw new Error("GitHub token is missing");
+  }
   return new Octokit({
-    auth: process.env.GITHUB_TOKEN
+    auth: token
   });
 };
 
@@ -368,7 +372,7 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Owner and repo parameters are required' });
     }
 
-    const octokit = getOctokit();
+    const octokit = getOctokit(req);
 
     // Get basic repo info
     const repoInfo = await octokit.repos.get({
