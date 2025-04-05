@@ -1,5 +1,9 @@
 import { createCanvas } from '@napi-rs/canvas';
 import axios from 'axios';
+import dotenv from 'dotenv';
+
+dotenv.config();
+
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
