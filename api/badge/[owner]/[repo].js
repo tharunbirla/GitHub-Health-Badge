@@ -2,6 +2,7 @@ import { createCanvas } from '@napi-rs/canvas';
 import axios from 'axios';
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
+const token = req.headers.authorization?.split(' ')[1];
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -26,8 +27,8 @@ export default async function handler(req, res) {
 
     const response = await axios.get(url, {
       headers: {
-        Authorization: `Bearer ${GITHUB_TOKEN}`,
-        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/vnd.github+json',
       },
     });
 
