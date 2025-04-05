@@ -1,5 +1,7 @@
-import { createCanvas } from '@napi-rs/canvas';
+import { createCanvas, registerFont } from '@napi-rs/canvas';
 import axios from 'axios';
+
+const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
 export default async function handler(req, res) {
   // Set CORS headers
@@ -16,34 +18,44 @@ export default async function handler(req, res) {
   const { owner, repo } = req.query;
 
   try {
-    // The URL has the protocol (https://)
     const baseUrl = process.env.VERCEL_URL
-    ? `https://${process.env.VERCEL_URL}`
-    : 'http://localhost:3000';
+      ? `https://${process.env.VERCEL_URL}`
+      : 'http://localhost:3000';
+
     const url = `${baseUrl}/api/health/${owner}/${repo}`;
 
-    const response = await axios.get(url);
+    const response = await axios.get(url, {
+      headers: {
+        Authorization: `Bearer ${GITHUB_TOKEN}`,
+        Accept: 'application/json',
+      },
+    });
 
     const healthScore = response.data.healthScore;
+
     if (healthScore === undefined) {
       return res.status(400).send('Health score not found in response');
     }
 
     const color = healthScore >= 0.7 ? '#28a745' : '#dc3545';
+
     const canvas = createCanvas(300, 50);
     const ctx = canvas.getContext('2d');
+
     ctx.fillStyle = color;
     ctx.fillRect(0, 0, 300, 50);
-    ctx.fillStyle = '#fff';
-    ctx.font = '20px Arial';
+
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '20px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     ctx.fillText(`Health Score: ${healthScore}`, 150, 25);
 
     res.setHeader('Content-Type', 'image/png');
     res.send(canvas.toBuffer());
+
   } catch (error) {
-    console.error('Error:', error);
+    console.error('Error generating badge:', error.message);
     res.status(500).send('Error generating badge');
   }
 }
