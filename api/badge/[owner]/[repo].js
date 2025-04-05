@@ -49,19 +49,22 @@ export default async function handler(req, res) {
     if (healthScore >= 0.8) color = '#28a745';      // green
     else if (healthScore >= 0.5) color = '#ffc107'; // yellow
     else color = '#dc3545';                         // red
-
+    
     const canvas = createCanvas(300, 50);
     const ctx = canvas.getContext('2d');
-
+    
+    // Background
     ctx.fillStyle = color;
     ctx.fillRect(0, 0, 300, 50);
-
+    
+    // Text
     ctx.fillStyle = '#ffffff';
-    ctx.font = '20px sans-serif';
+    ctx.font = 'bold 20px Arial';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`Unavailable`, 150, 25);
-
+    
+    const text = `Health Score: ${Number(healthScore).toFixed(2)}`;
+    ctx.fillText(text, 150, 25);
     res.setHeader('Content-Type', 'image/png');
     res.send(canvas.toBuffer());
 
