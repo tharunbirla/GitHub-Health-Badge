@@ -22,13 +22,13 @@ export default async function handler(req, res) {
   const { owner, repo } = req.query;
 
   try {
-    const baseUrl = process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}`
-      : 'http://localhost:3000';
+    const response = await fetch(`https://api.github.com/repos/${owner}/${repo}`, {
+      headers: {
+        Authorization: `token ${GITHUB_TOKEN}`,
+        Accept: 'application/vnd.github.v3+json'
+      }
+    });
 
-    const url = `${baseUrl}/api/health/${owner}/${repo}?token=${process.env.GITHUB_TOKEN}`;
-
-    const response = await axios.get(url);
 
     const healthScore = response.data.healthScore;
 
