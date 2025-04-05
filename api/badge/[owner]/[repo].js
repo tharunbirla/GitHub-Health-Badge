@@ -1,9 +1,7 @@
 import { createCanvas } from '@napi-rs/canvas';
-import axios from 'axios';
 import dotenv from 'dotenv';
 
 dotenv.config();
-
 
 const GITHUB_TOKEN = process.env.GITHUB_TOKEN;
 
@@ -21,30 +19,31 @@ export default async function handler(req, res) {
 
   const { owner, repo } = req.query;
 
+  if (!owner || !repo) {
+    return res.status(400).send('Missing owner or repo in query');
+  }
+
   try {
-    
     const response = await fetch(`https://github-health-badge.vercel.app/api/health/${owner}/${repo}`, {
       headers: {
         Authorization: `token ${GITHUB_TOKEN}`,
-        Accept: 'application/vnd.github.v3+json'
+        Accept: 'application/vnd.github.v3+json',
       }
     });
-    
+
     if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`Fetch failed: ${response.status} - ${errText}`);
+      const errorText = await response.text();
+      throw new Error(`Failed to fetch health score: ${response.status} - ${errorText}`);
     }
-    
+
     const data = await response.json();
     const healthScore = data.healthScore;
 
-
-    if (healthScore === undefined) {
-      return res.status(400).send('Health score not found in response');
+    if (typeof healthScore !== 'number') {
+      throw new Error('Invalid health score received');
     }
 
-    const color = healthScore >= 0.7 ? '#28a745' : '#dc3545';
-
+    const color = healthScore >= 0.7 ? '#28a745' : '#dc3545'; // green or red
     const canvas = createCanvas(300, 50);
     const ctx = canvas.getContext('2d');
 
@@ -55,14 +54,13 @@ export default async function handler(req, res) {
     ctx.font = '20px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`Health Score: ${healthScore}`, 150, 25);
+    ctx.fillText(`Health Score: ${healthScore.toFixed(2)}`, 150, 25);
 
     res.setHeader('Content-Type', 'image/png');
     res.send(canvas.toBuffer());
 
   } catch (error) {
     console.error('Error generating badge:', error.message);
-    console.log(response)
     res.status(500).send('Error generating badge');
   }
 }
