@@ -427,7 +427,7 @@ async function fetchContributors(owner, repo) {
 }
 
 
-
+const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`GitHub Repo Health Score API running on port ${port}`);
 });

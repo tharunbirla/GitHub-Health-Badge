@@ -13,8 +13,15 @@ export default async function handler(req, res) {
     : `https://${req.headers.host}`;
 
   try {
-    const response = await axios.get(`${baseURL}/api/health/${owner}/${repo}`);
+    try {
+        const response = await axios.get(`https://api.github.com/repos/${owner}/${repo}`, {
+          headers: { Authorization: `Bearer ${process.env.GITHUB_TOKEN}` }
+        });
     const { healthScore } = response.data;
+    } catch (err) {
+        console.error('GitHub API error:', err?.response?.data || err.message);
+        return res.status(500).json({ error: 'Failed to fetch GitHub data' });
+    }
 
     const image = new ImageResponse(
       (
