@@ -22,7 +22,7 @@ export default async function handler(req, res) {
       ? `https://${process.env.VERCEL_URL}`
       : 'http://localhost:3000';
 
-    const url = `${baseUrl}/api/health/${owner}/${repo}?token=${GITHUB_TOKEN}`;
+    const url = `${baseUrl}/api/health/${owner}/${repo}?token=${process.env.GITHUB_TOKEN}`;
 
     const response = await axios.get(url);
 
