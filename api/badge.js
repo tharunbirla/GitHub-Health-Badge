@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { ImageResponse } from '@vercel/og';
 
 export const config = {
@@ -14,7 +13,6 @@ export default async function handler(req) {
     return new Response('Missing owner or repo', { status: 400 });
   }
 
-  // Automatically construct base URL (supports both Vercel and localhost)
   const baseURL = req.headers.get('host').startsWith('localhost')
     ? `http://${req.headers.get('host')}`
     : `https://${req.headers.get('host')}`;
@@ -22,8 +20,11 @@ export default async function handler(req) {
   let healthData;
 
   try {
-    const response = await axios.get(`${baseURL}/api/health/${owner}/${repo}`);
-    healthData = response.data;
+    const res = await fetch(`${baseURL}/api/health/${owner}/${repo}`);
+    if (!res.ok) {
+      throw new Error(`HTTP error! status: ${res.status}`);
+    }
+    healthData = await res.json();
   } catch (err) {
     console.error('Error fetching health data:', err);
     return new Response('Failed to fetch health data', { status: 500 });
