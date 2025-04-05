@@ -29,9 +29,15 @@ export default async function handler(req, res) {
         Accept: 'application/vnd.github.v3+json'
       }
     });
+    
+    if (!response.ok) {
+      const errText = await response.text();
+      throw new Error(`Fetch failed: ${response.status} - ${errText}`);
+    }
+    
+    const data = await response.json();
+    const healthScore = data.healthScore;
 
-
-    const healthScore = response.data.healthScore;
 
     if (healthScore === undefined) {
       return res.status(400).send('Health score not found in response');
