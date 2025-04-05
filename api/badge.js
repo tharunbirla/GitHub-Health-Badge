@@ -1,43 +1,57 @@
-import { createCanvas } from '@napi-rs/canvas';
 import axios from 'axios';
+import { ImageResponse } from '@vercel/og';
 
-export default async function handler(req, res) {
-  const {
-    query: { owner, repo },
-  } = req;
+export const config = {
+  runtime: 'edge',
+};
 
-  const BACKEND_URL = process.env.BACKEND_URL;
+export default async function handler(req) {
+  const { searchParams } = new URL(req.url);
+  const owner = searchParams.get('owner');
+  const repo = searchParams.get('repo');
+
+  if (!owner || !repo) {
+    return new Response('Missing owner or repo', { status: 400 });
+  }
+
+  // Automatically construct base URL (supports both Vercel and localhost)
+  const baseURL = req.headers.get('host').startsWith('localhost')
+    ? `http://${req.headers.get('host')}`
+    : `https://${req.headers.get('host')}`;
+
+  let healthData;
 
   try {
-    const baseURL = req.headers.host?.includes('localhost')
-    ? `http://${req.headers.host}`
-    : `https://${req.headers.host}`;
-
     const response = await axios.get(`${baseURL}/api/health/${owner}/${repo}`);
-
-    const healthScore = response.data.healthScore;
-
-    if (healthScore === undefined) {
-      return res.status(400).send('Health score not found in response');
-    }
-
-    const color = healthScore >= 0.7 ? '#28a745' : '#dc3545';
-    const canvas = createCanvas(300, 50);
-    const ctx = canvas.getContext('2d');
-
-    ctx.fillStyle = color;
-    ctx.fillRect(0, 0, 300, 50);
-
-    ctx.fillStyle = '#fff';
-    ctx.font = '20px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(`Health Score: ${healthScore}`, 150, 25);
-
-    res.setHeader('Content-Type', 'image/png');
-    res.send(canvas.toBuffer());
-  } catch (error) {
-    console.error('Error:', error);
-    res.status(500).send('Error generating badge');
+    healthData = response.data;
+  } catch (err) {
+    console.error('Error fetching health data:', err);
+    return new Response('Failed to fetch health data', { status: 500 });
   }
+
+  const score = healthData.healthScore || 0;
+
+  return new ImageResponse(
+    (
+      <div
+        style={{
+          fontSize: 28,
+          background: '#0f172a',
+          color: '#f1f5f9',
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontFamily: 'monospace',
+        }}
+      >
+        GitHub Health Score: {score}/100
+      </div>
+    ),
+    {
+      width: 400,
+      height: 100,
+    }
+  );
 }
