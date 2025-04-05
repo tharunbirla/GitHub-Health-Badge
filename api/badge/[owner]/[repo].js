@@ -16,8 +16,10 @@ export default async function handler(req, res) {
   const { owner, repo } = req.query;
   
   try {
-    // Use deployed URL
-    const response = await axios.get(`${process.env.VERCEL_URL || 'https://github-health-badge.vercel.app'}/api/health/${owner}/${repo}`);
+    // Testing URL is valid by adding the protocol if not set
+    const url = `${process.env.VERCEL_URL ? process.env.VERCEL_URL : 'https://github-health-badge.vercel.app'}/api/health/${owner}/${repo}`;
+    
+    const response = await axios.get(url);
     
     const healthScore = response.data.healthScore;
     if (healthScore === undefined) {
