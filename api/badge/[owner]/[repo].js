@@ -51,8 +51,3 @@ export default async function handler(req, res) {
     res.send(buffer);
   }
 }
-
-// Ensure Node.js runtime
-export const config = {
-  runtime: 'nodejs',
-};
