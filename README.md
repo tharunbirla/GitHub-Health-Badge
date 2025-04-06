@@ -1,65 +1,126 @@
 # 🩺 GitHub Health Badge
 
-[![Repository Health](https://github-health-badge.vercel.app/api/badge/facebook/react)](https://github.com/facebook/react)
+Generate live **repository health badges** for any public GitHub repository! Perfect for adding to your README to showcase how actively maintained or healthy a project is.
 
-Generate beautiful and live **repository health badges** for any public GitHub repository!  
-Perfect for adding to your README to instantly show how actively maintained or healthy a project is.
+[![Repository Health](https://github-health-badge.vercel.app/api/badge/facebook/react)](https://github.com/tharunbila/GitHub-Health-Badge)
 
 ---
 
 ## 🚀 What Is This?
 
-This project visualizes GitHub repository health using a **custom image badge** that displays a health score (based on commit activity, PR/issue responsiveness, contributor diversity, etc.).
+This project provides two main functionalities:
 
-Built with:
+1. **Health Score API**: Calculates a health score for a GitHub repository based on metrics such as:
+   - Issue response time
+   - PR merge time
+   - Commit frequency
+   - Contributor activity
+   - Issue close rate
+   - Codebase growth
+   - Documentation quality
 
-- 🖌️ [`@napi-rs/canvas`](https://github.com/Brooooooklyn/canvas) for rendering badges.
-- ⚙️ Express API to calculate health.
-- 🌐 Axios to fetch health scores from your own backend.
+2. **Dynamic Badges**: Generates beautiful and dynamic badges that visualize the calculated health score.
 
 ---
 
 ## 🔧 Usage
 
-Embed a badge in any markdown file like this:
+### 1. Health Score API
 
-```md
+Fetch the health score of a GitHub repository by making a GET request to:
+
+```
+https://github-health-badge.vercel.app/api/health/<owner>/<repo>
+```
+
+**Example**:
+
+```
+https://github-health-badge.vercel.app/api/health/facebook/react
+```
+
+**Response**:
+
+```json
+{
+  "repoName": "react",
+  "repoOwner": "facebook",
+  "healthScore": 0.83,
+  "metrics": {
+    "issuesResponseTime": {
+      "score": 0.8,
+      "value": "2.5 days",
+      "description": "Average time to respond to issues: 2.5 days"
+    },
+    "prMergeTime": {
+      "score": 0.6,
+      "value": "7.2 days",
+      "description": "Average time to merge PRs: 7.2 days"
+    },
+    "commitFrequency": {
+      "score": 1,
+      "value": "25 commits/week",
+      "description": "Average weekly commits: 25"
+    },
+    "contributorCount": {
+      "score": 0.8,
+      "value": "15/20 active",
+      "description": "15 active out of 20 total contributors"
+    },
+    "issueCloseRate": {
+      "score": 0.9,
+      "value": "90%",
+      "description": "Issue close rate: 90%"
+    },
+    "codebaseGrowth": {
+      "score": 0.8,
+      "value": "50 commits",
+      "description": "Total commits: 50"
+    },
+    "documentationScore": {
+      "score": 1,
+      "value": "README found",
+      "description": "The repository has a README file."
+    }
+  },
+  "updatedAt": "2023-10-04T12:34:56Z"
+}
+```
+
+### 2. Dynamic Badges
+
+Embed a badge in your markdown files like this:
+
+```markdown
 ![Repository Health](https://github-health-badge.vercel.app/api/badge/<owner>/<repo>)
 ```
 
 **Example**:
 
-```md
+```markdown
 ![Repository Health](https://github-health-badge.vercel.app/api/badge/facebook/react)
 ```
 
-You can click the badge to view the GitHub repository:
+Make it clickable by linking it to the repository:
 
-```md
+```markdown
 [![Repository Health](https://github-health-badge.vercel.app/api/badge/facebook/react)](https://github.com/facebook/react)
 ```
 
 ---
 
-## 🛠 Backend Requirement
+## 🛠 Backend Requirements
 
-This badge service depends on a backend API that calculates and returns a health score JSON like:
+The health score API depends on a backend service that fetches data from the GitHub API. Ensure you have:
 
-```json
-{
-  "healthScore": 0.83
-}
-```
+1. A valid **GitHub Personal Access Token** (PAT) with `repo` scope.
+2. Set the token in the `.env` file:
 
-You must either:
+   ```env
+   GITHUB_TOKEN=your-github-personal-access-token
+   ```
 
-1. Deploy your own backend and set the URL via `.env`:
-
-```env
-BACKEND_URL=https://your-backend.com
-```
-
-2. Or use the default service if provided.
+If no token is provided, the default GitHub API rate limits will apply.
 
 ---
 
@@ -68,40 +129,66 @@ BACKEND_URL=https://your-backend.com
 ```
 📦 github-health-badge
 ├── api/
-│   └── badge.js         # Vercel Serverless Function
-├── backend/
-│   ├── index.js         # Express server to calculate health
-│   └── canva.js         # (Optional) canvas test setup
-├── .env                 # Environment variable for BACKEND_URL
+│   └── health
+|   |   └── [owner]
+|   |       └── [repo].js # Vercel Serverless Function for health score 
+|   |
+│   └── badge
+|       └── [owner]
+|           └── [repo].js # Vercel Serverless Function for badge generation
+|
+├── .env                 # Environment variable for GITHUB_TOKEN
 ├── package.json
-└── vercel.json          # Optional deployment config
+└── vercel.json          # Deployment configuration
 ```
 
 ---
 
 ## 🧪 Local Development
 
-```bash
-# Install dependencies
-npm install
+1. **Install Dependencies**:
+   ```bash
+   npm install
+   ```
 
-# Start backend (port 3000)
-cd backend && node index.js
+2. **Set Environment Variables**:
+   Create a `.env` file with your GitHub token:
+   ```env
+   GITHUB_TOKEN=your-github-personal-access-token
+   ```
 
-# Start Vercel dev for frontend (badge API)
-cd ..
-vercel dev
-```
+3. **Start the API Locally**:
+   ```bash
+   npm run dev
+   ```
+
+4. Test the health API:
+   ```
+   http://localhost:3000/api/health/<owner>/<repo>
+   ```
+
+5. Test the badge API:
+   ```
+   http://localhost:3000/api/badge/<owner>/<repo>
+   ```
 
 ---
 
 ## 🌍 Live Deployment
 
-The badge is deployed on **Vercel**:
+The badge and health APIs are deployed on **Vercel**:
 
-```
-https://github-health-badge.vercel.app/api/badge/<owner>/<repo>
-```
+- Health API:
+  ```
+  https://github-health-badge.vercel.app/api/health/<owner>/<repo>
+  ```
+
+- Badge API:
+  ```
+  https://github-health-badge.vercel.app/api/badge/<owner>/<repo>
+  ```
+
+Replace `<owner>` and `<repo>` with the GitHub repository details.
 
 ---
 
@@ -114,17 +201,3 @@ Built with ❤️ by [@tharunbirla](https://github.com/tharunbirla)
 ## 📜 License
 
 MIT
-
----
-
-### ✅ What's Next?
-
-You can now:
-
-1. **Create a GitHub repo** called `github-health-badge`.
-2. Push this project.
-3. Copy the above README into `README.md`.
-4. Deploy to Vercel (if not already done).
-5. Share your repo and let others use it!
-
-Need help writing the backend health score logic or styling the badge further? Just say the word!
