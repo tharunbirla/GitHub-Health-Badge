@@ -67,7 +67,7 @@ export default async function handler(req, res) {
     ctx.fillStyle = '#ffffff';
     ctx.strokeStyle = '#000000';
     ctx.lineWidth = 2;
-    ctx.font = 'bold 22px Arial, Helvetica, sans-serif';
+    ctx.font = 'bold 22px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
     
@@ -100,7 +100,7 @@ export default async function handler(req, res) {
       ctx.fillStyle = '#ffffff';
       ctx.strokeStyle = '#000000';
       ctx.lineWidth = 2;
-      ctx.font = 'bold 18px Arial, Helvetica, sans-serif';
+      ctx.font = 'bold 22px sans-serif';
       ctx.textAlign = 'center';
       ctx.textBaseline = 'middle';
       
