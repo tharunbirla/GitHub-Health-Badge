@@ -11,33 +11,56 @@ export default async function handler(req, res) {
     return;
   }
 
-  const canvas = createCanvas(300, 60);
+  const canvas = createCanvas(200, 30);
   const ctx = canvas.getContext('2d');
 
   try {
     const healthUrl = `https://github-health-badge.vercel.app/api/health/${owner}/${repo}`;
     const response = await fetch(healthUrl);
+
     if (!response.ok) throw new Error(`Health fetch failed: ${response.status}`);
     const data = await response.json();
     const scoreValue = Number(data.healthScore) || 0;
-    let bgColor = scoreValue >= 0.6 ? '#28a745' : scoreValue >= 0.3 ? '#ffc107' : '#dc3545';
-    ctx.fillStyle = bgColor;
-    ctx.fillRect(0, 0, 300, 60);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 16px sans-serif';
-    ctx.textAlign = 'center';
+
+    // Define colors based on score
+    let valueColor = scoreValue >= 0.6 ? '#4c1' : scoreValue >= 0.3 ? '#dfb317' : '#e05d44';
+    const labelColor = '#555';
+
+    // Draw label section
+    ctx.fillStyle = labelColor;
+    ctx.fillRect(0, 0, 65, 30);
+
+    // Draw value section
+    ctx.fillStyle = valueColor;
+    ctx.fillRect(65, 0, 135, 30);
+
+    // Set up text properties
+    ctx.font = 'bold 11px sans-serif';
     ctx.textBaseline = 'middle';
-    ctx.fillText(`Health Score: ${scoreValue.toFixed(2)}`, 150, 30);
+    ctx.fillStyle = '#fff';
+
+    // Draw label text
+    ctx.textAlign = 'center';
+    ctx.fillText('Health', 32, 15);
+
+    // Draw value text
+    ctx.textAlign = 'start';
+    ctx.fillText(`Score ${scoreValue.toFixed(2)}`, 75, 15);
+
+    // Send the image buffer as the response
     const buffer = canvas.toBuffer('image/png');
     res.send(buffer);
   } catch (error) {
-    ctx.fillStyle = '#6c757d';
-    ctx.fillRect(0, 0, 300, 60);
-    ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 16px sans-serif';
+    // Fallback for errors: gray background with "Error" text
+    ctx.fillStyle = '#9f9f9f';
+    ctx.fillRect(0, 0, 200, 30);
+
+    ctx.fillStyle = '#fff';
+    ctx.font = 'bold 11px sans-serif';
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
-    ctx.fillText('Error', 150, 30);
+    ctx.fillText('Error', 100, 15);
+
     const buffer = canvas.toBuffer('image/png');
     res.send(buffer);
   }
