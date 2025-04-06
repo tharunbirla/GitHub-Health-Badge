@@ -2,7 +2,7 @@
 
 Generate live **repository health badges** for any public GitHub repository! Perfect for adding to your README to showcase how actively maintained or healthy a project is.
 
-[![Repository Health](https://github-health-badge.vercel.app/api/badge/facebook/react)](https://github.com/tharunbila/GitHub-Health-Badge)
+[![Repository Health](https://github-health-badge.vercel.app/api/badge/tharunbirla/GitHub-Health-Badge)](https://github.com/tharunbila/GitHub-Health-Badge)
 
 ---
 
